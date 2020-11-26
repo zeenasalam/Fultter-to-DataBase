@@ -22,35 +22,26 @@ class Debouncer {
   run(VoidCallback action) {
     if (null != _timer) {
       _timer
-          .cancel(); // when the user is continuosly typing, this cancels the timer
+          .cancel();
     }
-    // then we will start a new timer looking for the user to stop
+
     _timer = Timer(Duration(milliseconds: milliseconds), action);
   }
 }
 
 class DataTableDemoState extends State<DataTableDemo> {
   List<Employee> _employees;
-  // this list will hold the filtered employees
+
   List<Employee> _filterEmployees;
   GlobalKey<ScaffoldState> _scaffoldKey;
-  // controller for the First Name TextField we are going to create.
+
   TextEditingController _firstNameController;
-  // controller for the Last Name TextField we are going to create.
+
   TextEditingController _lastNameController;
   Employee _selectedEmployee;
   bool _isUpdating;
   String _titleProgress;
-  // This will wait for 500 milliseconds after the user has stopped typing.
-  // This puts less pressure on the device while searching.
-  // If the search is done on the server while typing, it keeps the
-  // server hit down, thereby improving the performance and conserving
-  // battery life...
   final _debouncer = Debouncer(milliseconds: 2000);
-  // Lets increase the time to wait and search to 2 seconds.
-  // So now its searching after 2 seconds when the user stops typing...
-  // That's how we can do filtering in Flutter DataTables.
-
   @override
   void initState() {
     super.initState();
@@ -64,7 +55,7 @@ class DataTableDemoState extends State<DataTableDemo> {
     _getEmployees();
   }
 
-  // Method to update title in the AppBar Title
+
   _showProgress(String message) {
     setState(() {
       _titleProgress = message;
@@ -83,7 +74,7 @@ class DataTableDemoState extends State<DataTableDemo> {
     _showProgress('Creating Table...');
     Services.createTable().then((result) {
       if ('success' == result) {
-        // Table is created successfully.
+
         _showSnackBar(context, result);
         _showProgress(widget.title);
       }
@@ -100,7 +91,7 @@ class DataTableDemoState extends State<DataTableDemo> {
     Services.addEmployee(_firstNameController.text, _lastNameController.text)
         .then((result) {
       if ('success' == result) {
-        _getEmployees(); // Refresh the List after adding each employee...
+        _getEmployees();
         _clearValues();
       }
     });
@@ -111,10 +102,10 @@ class DataTableDemoState extends State<DataTableDemo> {
     Services.getEmployees().then((employees) {
       setState(() {
         _employees = employees;
-        // Initialize to the list from Server when reloading...
+
         _filterEmployees = employees;
       });
-      _showProgress(widget.title); // Reset the title...
+      _showProgress(widget.title);
       print("Length ${employees.length}");
     });
   }
@@ -128,7 +119,7 @@ class DataTableDemoState extends State<DataTableDemo> {
         employee.id, _firstNameController.text, _lastNameController.text)
         .then((result) {
       if ('success' == result) {
-        _getEmployees(); // Refresh the list after update
+        _getEmployees();
         setState(() {
           _isUpdating = false;
         });
@@ -141,12 +132,12 @@ class DataTableDemoState extends State<DataTableDemo> {
     _showProgress('Deleting Employee...');
     Services.deleteEmployee(employee.id).then((result) {
       if ('success' == result) {
-        _getEmployees(); // Refresh after delete...
+        _getEmployees();
       }
     });
   }
 
-  // Method to clear TextField values
+
   _clearValues() {
     _firstNameController.text = '';
     _lastNameController.text = '';
@@ -157,14 +148,9 @@ class DataTableDemoState extends State<DataTableDemo> {
     _lastNameController.text = employee.lastName;
   }
 
-// Since the server is running locally you may not
-// see the progress in the titlebar, its so fast...
-// :)
 
-  // Let's create a DataTable and show the employee list in it.
+
   SingleChildScrollView _dataBody() {
-    // Both Vertical and Horozontal Scrollview for the DataTable to
-    // scroll both Vertical and Horizontal...
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: SingleChildScrollView(
@@ -180,22 +166,20 @@ class DataTableDemoState extends State<DataTableDemo> {
             DataColumn(
               label: Text('LAST NAME'),
             ),
-            // Lets add one more column to show a delete button
+
             DataColumn(
               label: Text('DELETE'),
             )
           ],
-          // the list should show the filtered list now
+
           rows: _filterEmployees
               .map(
                 (employee) => DataRow(cells: [
               DataCell(
                 Text(employee.id),
-                // Add tap in the row and populate the
-                // textfields with the corresponding values to update
                 onTap: () {
                   _showValues(employee);
-                  // Set the Selected employee to Update
+
                   _selectedEmployee = employee;
                   setState(() {
                     _isUpdating = true;
@@ -208,9 +192,9 @@ class DataTableDemoState extends State<DataTableDemo> {
                 ),
                 onTap: () {
                   _showValues(employee);
-                  // Set the Selected employee to Update
+
                   _selectedEmployee = employee;
-                  // Set flag updating to true to indicate in Update Mode
+
                   setState(() {
                     _isUpdating = true;
                   });
@@ -222,7 +206,7 @@ class DataTableDemoState extends State<DataTableDemo> {
                 ),
                 onTap: () {
                   _showValues(employee);
-                  // Set the Selected employee to Update
+
                   _selectedEmployee = employee;
                   setState(() {
                     _isUpdating = true;
@@ -243,7 +227,7 @@ class DataTableDemoState extends State<DataTableDemo> {
     );
   }
 
-  // Let's add a searchfield to search in the DataTable.
+
   searchField() {
     return Padding(
       padding: EdgeInsets.all(20.0),
@@ -253,10 +237,8 @@ class DataTableDemoState extends State<DataTableDemo> {
           hintText: 'Filter by First name or Last name',
         ),
         onChanged: (string) {
-          // We will start filtering when the user types in the textfield.
-          // Run the debouncer and start searching
           _debouncer.run(() {
-            // Filter the original List and update the Filter list
+
             setState(() {
               _filterEmployees = _employees
                   .where((u) => (u.firstName
@@ -271,16 +253,13 @@ class DataTableDemoState extends State<DataTableDemo> {
     );
   }
 
-  // id is coming as String
-  // So let's update the model...
-
   // UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(_titleProgress), // we show the progress in the title...
+        title: Text(_titleProgress),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
@@ -319,8 +298,6 @@ class DataTableDemoState extends State<DataTableDemo> {
               ),
             ),
 
-            // Add an update button and a Cancel Button
-            // show these buttons only when updating an employee
             _isUpdating
                 ? Row(
               children: <Widget>[
