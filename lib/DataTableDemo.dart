@@ -3,7 +3,7 @@ import 'Employee.dart';
 import 'Services.dart';
 import 'dart:async';
 
-class DataTableDemo extends StatefulWidget {
+class DataTableDemo extends Statefu lWidget {
   //
   DataTableDemo() : super();
 
@@ -127,6 +127,7 @@ class DataTableDemoState extends State<DataTableDemo> {
       }
     });
   }
+
 
   _deleteEmployee(Employee employee) {
     _showProgress('Deleting Employee...');
