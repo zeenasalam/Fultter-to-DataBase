@@ -3,7 +3,7 @@
 
 $servername="localhost";
 $username="root";
-$password="";
+$password="root";
 $dbname="TestDB";
 $table="Employees";
 
@@ -66,7 +66,7 @@ return;
 
 
 if ("UPDATE_EMP == $action") {
-    $emp_id = $_POST['$emp_id'];
+    $emp_id = $_POST['emp_id'];
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $sql= "UPDATE $table SET first_name ='$first_name', last_name= '$last_name' WHERE id = $emp_id  ";
@@ -95,7 +95,3 @@ return;
 
 
 ?>
- 
-
-
-
